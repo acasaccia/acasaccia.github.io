@@ -6,13 +6,16 @@ body {
     font-family: 'Josefin Sans', sans-serif;
     margin: 0;
     background: linear-gradient(to bottom, rgba(0,183,234,1) 0%,rgba(0,158,195,1) 100%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     color: white;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    min-height: 500px;
 }
 
 .container {
     height: 100%;
-    padding: 0;
+    padding: 2rem 0.5rem;
     margin: 0;
     display: flex;
     align-items: center;
@@ -43,6 +46,10 @@ body {
 }
 
 .image {
+    margin-bottom: 2rem;
+}
+
+.social {
     margin-bottom: 2rem;
 }
 
