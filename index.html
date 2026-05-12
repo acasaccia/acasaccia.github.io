@@ -171,34 +171,21 @@ Library section will be ignored."
           <div
             style="
               display: grid;
-              grid-template-columns: 1fr 1fr;
+              grid-template-columns: 1fr;
               gap: 10px;
               margin-bottom: 10px;
             "
           >
             <div>
               <label style="font-size: 12px; font-weight: normal"
-                >Discipline:</label
+                >Discipline (POT=superior, pot=inferior):</label
               >
               <input
                 type="text"
                 id="queryDiscipline"
-                placeholder="e.g., POT, CEL"
+                placeholder="e.g., POT (superior), cel (inferior)"
                 style="width: 100%; padding: 5px"
               />
-            </div>
-            <div>
-              <label style="font-size: 12px; font-weight: normal"
-                >Discipline Level:</label
-              >
-              <select
-                id="queryDisciplineLevel"
-                style="width: 100%; padding: 5px"
-              >
-                <option value="">Any (Superior or Inferior)</option>
-                <option value="superior">Superior only</option>
-                <option value="inferior">Any level (including Inferior)</option>
-              </select>
             </div>
           </div>
           <div
@@ -469,9 +456,6 @@ Library section will be ignored."
           const discipline = document
             .getElementById("queryDiscipline")
             .value.trim();
-          const disciplineLevel = document.getElementById(
-            "queryDisciplineLevel",
-          ).value;
           const minCapacity = document.getElementById("queryMinCapacity").value;
           const maxCapacity = document.getElementById("queryMaxCapacity").value;
           const title = document.getElementById("queryTitle").value.trim();
@@ -479,9 +463,6 @@ Library section will be ignored."
 
           if (discipline) {
             query.discipline = discipline;
-            if (disciplineLevel) {
-              query.disciplineLevel = disciplineLevel;
-            }
           }
           if (minCapacity) query.minCapacity = parseInt(minCapacity);
           if (maxCapacity) query.maxCapacity = parseInt(maxCapacity);

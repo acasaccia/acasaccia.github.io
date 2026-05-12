@@ -250,16 +250,22 @@ function checkHandQuery(hand, vampireData, query) {
 }
 
 function matchesQuery(vampire, query) {
-  // Check discipline (superior or inferior)
+  // Check discipline - use case to determine level (POT=superior, pot=inferior)
   if (query.discipline) {
-    const disc = query.discipline.toUpperCase();
-    const hasSuperior = vampire.disciplines.superior.includes(disc);
-    const hasInferior = vampire.disciplines.inferior.includes(disc);
-
-    if (query.disciplineLevel === "superior" && !hasSuperior) return false;
-    if (query.disciplineLevel === "inferior" && !hasInferior && !hasSuperior)
-      return false;
-    if (!query.disciplineLevel && !hasSuperior && !hasInferior) return false;
+    const disc = query.discipline;
+    const isUpperCase = disc === disc.toUpperCase();
+    const discNormalized = disc.toUpperCase();
+    
+    if (isUpperCase) {
+      // Looking for superior discipline (e.g., POT) - only matches superior
+      if (!vampire.disciplines.superior.includes(discNormalized)) return false;
+    } else {
+      // Looking for inferior discipline (e.g., pot) - matches inferior OR superior
+      // (vampires with superior can play cards requiring inferior)
+      const hasInferior = vampire.disciplines.inferior.includes(discNormalized);
+      const hasSuperior = vampire.disciplines.superior.includes(discNormalized);
+      if (!hasInferior && !hasSuperior) return false;
+    }
   }
 
   // Check capacity
