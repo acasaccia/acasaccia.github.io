@@ -314,8 +314,14 @@ Library section will be ignored."
         html += "</tbody></table>";
 
         html += "<h2>Probability of Each Vampire Appearing in Hand</h2>";
-        html +=
-          '<p style="margin-bottom: 10px;"><em>Enter quantities (total must equal 4) to calculate the probability of drawing that specific combination:</em></p>';
+        html += (
+          <p style="margin-bottom: 10px;">
+            <em>
+              Enter quantities (1-4 total) to calculate the probability of
+              drawing at least those vampires:
+            </em>
+          </p>
+        );
         html += "<table><thead><tr>";
         html +=
           "<th class='quantity-cell'>Qty</th><th>Vampire</th><th>Cap</th><th>Disciplines</th><th>Title</th><th>Clan</th><th>Copies</th><th>Count</th><th>Probability</th><th>Distribution</th>";
@@ -397,13 +403,13 @@ Library section will be ignored."
           return;
         }
 
-        if (total !== 4) {
+        if (total > 4) {
           const selectedText = selected
             .map((s) => `${s.qty}x ${s.name}`)
             .join(", ");
           resultDiv.innerHTML = `<div class="specific-combo">
             <h2>Specific Combination</h2>
-            <p>Total: ${total} of 4 vampires. Please select exactly 4 total.</p>
+            <p>Total: ${total} vampires. Maximum is 4 (hand size).</p>
             <p class="selected-list">Currently selected: ${selectedText}</p>
           </div>`;
           return;
@@ -429,10 +435,11 @@ Library section will be ignored."
           .map((s) => `${s.qty}x ${s.name}`)
           .join(", ");
         const prob = (result.probability * 100).toFixed(2);
+        const exactOrAtLeast = total === 4 ? "exactly" : "at least";
         resultDiv.innerHTML = `<div class="specific-combo">
           <h2>Specific Combination Probability</h2>
-          <p class="selected-list">Target hand: ${selectedText}</p>
-          <p class="result">Probability of opening with exactly this combination: ${prob}%</p>
+          <p class="selected-list">Target: ${selectedText}</p>
+          <p class="result">Probability of opening with ${exactOrAtLeast} this combination: ${prob}%</p>
           <p>Occurred in ${result.count.toLocaleString()} out of ${currentSimulationData.draws.toLocaleString()} draws</p>
         </div>`;
       }

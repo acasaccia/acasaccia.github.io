@@ -179,26 +179,34 @@ function runSimulation(text) {
 }
 
 function calculateSpecificCombination(deck, targetVampires, draws, handSize) {
-  if (targetVampires.length !== 4) {
-    return null;
-  }
-
   let matchCount = 0;
   const deckSize = deck.length;
   const working = [...deck];
 
-  // Sort target for comparison
-  const sortedTarget = [...targetVampires].sort();
+  // Count required vampires by name
+  const requiredCounts = {};
+  targetVampires.forEach((name) => {
+    requiredCounts[name] = (requiredCounts[name] || 0) + 1;
+  });
 
   for (let i = 0; i < draws; i++) {
     for (let j = 0; j < deckSize; j++) working[j] = deck[j];
     shuffle(working);
 
     const hand = working.slice(0, handSize);
-    const sortedHand = [...hand].sort();
 
-    // Check if the hand matches the target exactly (including duplicates)
-    if (sortedHand.every((v, idx) => v === sortedTarget[idx])) {
+    // Count vampires in hand
+    const handCounts = {};
+    hand.forEach((name) => {
+      handCounts[name] = (handCounts[name] || 0) + 1;
+    });
+
+    // Check if hand contains at least the required vampires
+    const hasRequired = Object.entries(requiredCounts).every(
+      ([name, count]) => (handCounts[name] || 0) >= count,
+    );
+
+    if (hasRequired) {
       matchCount++;
     }
   }
@@ -255,7 +263,7 @@ function matchesQuery(vampire, query) {
     const disc = query.discipline;
     const isUpperCase = disc === disc.toUpperCase();
     const discNormalized = disc.toUpperCase();
-    
+
     if (isUpperCase) {
       // Looking for superior discipline (e.g., POT) - only matches superior
       if (!vampire.disciplines.superior.includes(discNormalized)) return false;
