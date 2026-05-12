@@ -142,18 +142,144 @@
     </div>
     <div class="container">
       <div>
-        <label for="input"
-          >Crypt List (from vdb.im):</label
-        >
+        <label for="input">Deck List (from vdb.im):</label>
         <textarea
           id="input"
-          placeholder="Enter your crypt list here...
+          placeholder="Enter your full deck export or just the crypt section...
 
 Example:
 
+Crypt (12 cards, min=24 max=28 avg=6.5)
+=======================================
 2x Aline Gädeke   7 POT PRE cel   baron   Brujah:6
-1x Rayne          2 pot                   Brujah:6"
+1x Rayne          2 pot                   Brujah:6
+
+Library section will be ignored."
         ></textarea>
+      </div>
+      <div>
+        <label>Query by Attributes:</label>
+        <div
+          style="
+            background: #f9f9f9;
+            padding: 15px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            border-radius: 4px;
+          "
+        >
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 10px;
+              margin-bottom: 10px;
+            "
+          >
+            <div>
+              <label style="font-size: 12px; font-weight: normal"
+                >Discipline:</label
+              >
+              <input
+                type="text"
+                id="queryDiscipline"
+                placeholder="e.g., POT, CEL"
+                style="width: 100%; padding: 5px"
+              />
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: normal"
+                >Discipline Level:</label
+              >
+              <select
+                id="queryDisciplineLevel"
+                style="width: 100%; padding: 5px"
+              >
+                <option value="">Any (Superior or Inferior)</option>
+                <option value="superior">Superior only</option>
+                <option value="inferior">Any level (including Inferior)</option>
+              </select>
+            </div>
+          </div>
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr 1fr 1fr;
+              gap: 10px;
+              margin-bottom: 10px;
+            "
+          >
+            <div>
+              <label style="font-size: 12px; font-weight: normal"
+                >Min Capacity:</label
+              >
+              <input
+                type="number"
+                id="queryMinCapacity"
+                placeholder="e.g., 7"
+                style="width: 100%; padding: 5px"
+              />
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: normal"
+                >Max Capacity:</label
+              >
+              <input
+                type="number"
+                id="queryMaxCapacity"
+                placeholder="e.g., 10"
+                style="width: 100%; padding: 5px"
+              />
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: normal">Title:</label>
+              <input
+                type="text"
+                id="queryTitle"
+                placeholder="e.g., baron"
+                style="width: 100%; padding: 5px"
+              />
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: normal">Clan:</label>
+              <input
+                type="text"
+                id="queryClan"
+                placeholder="e.g., Brujah"
+                style="width: 100%; padding: 5px"
+              />
+            </div>
+          </div>
+          <button
+            id="calculateQuery"
+            style="
+              padding: 8px 15px;
+              background: #1976d2;
+              color: white;
+              border: none;
+              border-radius: 4px;
+              cursor: pointer;
+              font-weight: bold;
+            "
+          >
+            Calculate Probability
+          </button>
+          <button
+            id="clearQuery"
+            style="
+              padding: 8px 15px;
+              background: #666;
+              color: white;
+              border: none;
+              border-radius: 4px;
+              cursor: pointer;
+              margin-left: 10px;
+            "
+          >
+            Clear
+          </button>
+        </div>
+        <div id="queryResult" style="margin-bottom: 10px"></div>
       </div>
       <div>
         <label for="output">Simulation Results:</label>
@@ -176,6 +302,7 @@ Example:
         html += `<p><strong>Crypt size:</strong> ${data.deckSize} cards</p>`;
         html += `<p><strong>Hand size:</strong> ${data.handSize}</p>`;
         html += `<p><strong>Draws:</strong> ${data.draws.toLocaleString()}</p>`;
+        html += `<p><strong>Simulation time:</strong> ${data.simulationTime.toFixed(1)}ms</p>`;
         html += "</div>";
 
         html += "<h2>Distinct Vampires in Opening Hand</h2>";
@@ -204,16 +331,28 @@ Example:
           '<p style="margin-bottom: 10px;"><em>Enter quantities (total must equal 4) to calculate the probability of drawing that specific combination:</em></p>';
         html += "<table><thead><tr>";
         html +=
-          "<th class='quantity-cell'>Qty</th><th>Vampire</th><th>Copies</th><th>Count</th><th>Probability</th><th>Distribution</th>";
+          "<th class='quantity-cell'>Qty</th><th>Vampire</th><th>Cap</th><th>Disciplines</th><th>Title</th><th>Clan</th><th>Copies</th><th>Count</th><th>Probability</th><th>Distribution</th>";
         html += "</tr></thead><tbody>";
 
         for (const vampire of data.vampires) {
           const prob = (vampire.probability * 100).toFixed(2);
           const barWidth = Math.round(vampire.probability * 200);
 
+          // Format disciplines
+          const supDisc = vampire.disciplines?.superior?.join(" ") || "";
+          const infDisc =
+            vampire.disciplines?.inferior
+              ?.map((d) => d.toLowerCase())
+              .join(" ") || "";
+          const disciplines = [supDisc, infDisc].filter((d) => d).join(" ");
+
           html += "<tr>";
           html += `<td class='quantity-cell'><input type="number" min="0" max="4" value="0" class="vamp-quantity" data-name="${vampire.name}" oninput="handleVampireSelection()"></td>`;
           html += `<td>${vampire.name}</td>`;
+          html += `<td>${vampire.capacity || ""}</td>`;
+          html += `<td style="font-size: 11px;">${disciplines}</td>`;
+          html += `<td>${vampire.title || ""}</td>`;
+          html += `<td>${vampire.clan || ""}</td>`;
           html += `<td>${vampire.copies}x</td>`;
           html += `<td>${vampire.appearances.toLocaleString()}</td>`;
           html += `<td>${prob}%</td>`;
@@ -315,6 +454,102 @@ Example:
       document
         .getElementById("input")
         .addEventListener("input", debouncedUpdate);
+
+      // Query functionality
+      document
+        .getElementById("calculateQuery")
+        .addEventListener("click", () => {
+          if (!currentSimulationData) {
+            document.getElementById("queryResult").innerHTML =
+              '<p class="error">Please enter a deck first.</p>';
+            return;
+          }
+
+          const query = {};
+          const discipline = document
+            .getElementById("queryDiscipline")
+            .value.trim();
+          const disciplineLevel = document.getElementById(
+            "queryDisciplineLevel",
+          ).value;
+          const minCapacity = document.getElementById("queryMinCapacity").value;
+          const maxCapacity = document.getElementById("queryMaxCapacity").value;
+          const title = document.getElementById("queryTitle").value.trim();
+          const clan = document.getElementById("queryClan").value.trim();
+
+          if (discipline) {
+            query.discipline = discipline;
+            if (disciplineLevel) {
+              query.disciplineLevel = disciplineLevel;
+            }
+          }
+          if (minCapacity) query.minCapacity = parseInt(minCapacity);
+          if (maxCapacity) query.maxCapacity = parseInt(maxCapacity);
+          if (title) query.title = title;
+          if (clan) query.clan = clan;
+
+          if (Object.keys(query).length === 0) {
+            document.getElementById("queryResult").innerHTML =
+              '<p class="error">Please enter at least one query parameter.</p>';
+            return;
+          }
+
+          const result = simulateWithQuery(
+            currentSimulationData.deck,
+            currentSimulationData.vampireData,
+            currentSimulationData.draws,
+            currentSimulationData.handSize,
+            query,
+          );
+
+          const prob = (result.probability * 100).toFixed(2);
+
+          // Build query description
+          const queryParts = [];
+          if (query.discipline) {
+            let discText = query.discipline.toUpperCase();
+            if (query.disciplineLevel === "superior")
+              discText += " (superior only)";
+            else if (query.disciplineLevel === "inferior")
+              discText += " (any level)";
+            queryParts.push(`discipline: ${discText}`);
+          }
+          if (
+            query.minCapacity !== undefined &&
+            query.maxCapacity !== undefined
+          ) {
+            queryParts.push(
+              `capacity: ${query.minCapacity}-${query.maxCapacity}`,
+            );
+          } else if (query.minCapacity !== undefined) {
+            queryParts.push(`capacity ≥ ${query.minCapacity}`);
+          } else if (query.maxCapacity !== undefined) {
+            queryParts.push(`capacity ≤ ${query.maxCapacity}`);
+          }
+          if (query.title) queryParts.push(`title: ${query.title}`);
+          if (query.clan) queryParts.push(`clan: ${query.clan}`);
+
+          const queryDesc = queryParts.join(", ");
+
+          document.getElementById("queryResult").innerHTML = `
+          <div class="specific-combo">
+            <h2>Query Result</h2>
+            <p class="selected-list">At least 1 vampire with: ${queryDesc}</p>
+            <p class="result">Probability: ${prob}%</p>
+            <p>Occurred in ${result.count.toLocaleString()} out of ${currentSimulationData.draws.toLocaleString()} draws</p>
+          </div>
+        `;
+        });
+
+      document.getElementById("clearQuery").addEventListener("click", () => {
+        document.getElementById("queryDiscipline").value = "";
+        document.getElementById("queryDisciplineLevel").value = "";
+        document.getElementById("queryMinCapacity").value = "";
+        document.getElementById("queryMaxCapacity").value = "";
+        document.getElementById("queryTitle").value = "";
+        document.getElementById("queryClan").value = "";
+        document.getElementById("queryResult").innerHTML = "";
+      });
     </script>
   </body>
 </html>
