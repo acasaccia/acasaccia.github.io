@@ -1,4 +1,4 @@
-// VTES Crypt Draw Simulator - UI Module
+// VTES Crypt Draw Simulator - Core Simulation Module
 
 const DRAWS = 100000;
 const HAND_SIZE = 4;
@@ -136,7 +136,7 @@ function simulate(deck, draws, handSize) {
   return { diversityCounts, appearanceCounts, uniqueNames };
 }
 
-function runSimulation(text) {
+export function runSimulation(text) {
   const { deck, vampireData } = parseCrypt(text);
 
   if (deck.length === 0) {
@@ -178,7 +178,12 @@ function runSimulation(text) {
   };
 }
 
-function calculateSpecificCombination(deck, targetVampires, draws, handSize) {
+export function calculateSpecificCombination(
+  deck,
+  targetVampires,
+  draws,
+  handSize,
+) {
   let matchCount = 0;
   const deckSize = deck.length;
   const working = [...deck];
@@ -218,7 +223,7 @@ function calculateSpecificCombination(deck, targetVampires, draws, handSize) {
 }
 
 // Query functions for vampire attributes
-function simulateWithQuery(deck, vampireData, draws, handSize, query) {
+export function simulateWithQuery(deck, vampireData, draws, handSize, query) {
   const deckSize = deck.length;
   const working = [...deck];
   let matchCount = 0;

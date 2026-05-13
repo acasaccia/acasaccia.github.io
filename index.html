@@ -3,535 +3,86 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VTES Crypt Simulator</title>
+    <title>Andrea's Projects</title>
     <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
+
       body {
-        font-family: monospace;
-        padding: 20px;
-        max-width: 1200px;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        padding: 40px 20px;
+        max-width: 800px;
         margin: 0 auto;
+        background: #f5f5f5;
       }
+
       h1 {
-        margin-bottom: 20px;
+        margin-bottom: 30px;
+        color: #333;
       }
-      .container {
-        display: flex;
-        flex-direction: column;
+
+      .projects {
+        display: grid;
         gap: 20px;
       }
-      textarea {
-        width: 100%;
-        height: 200px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        font-family: monospace;
-        font-size: 14px;
+
+      .project-card {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        color: inherit;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
       }
-      #output {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        background: #f5f5f5;
-        overflow-y: auto;
-        font-size: 14px;
+
+      .project-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       }
-      .stats {
-        margin-bottom: 20px;
-      }
-      .stats p {
-        margin: 5px 0;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-      }
-      th,
-      td {
-        text-align: left;
-        padding: 8px;
-        border-bottom: 1px solid #ddd;
-      }
-      th {
-        background: #e0e0e0;
-      }
-      .bar-container {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-      }
-      .bar {
-        height: 20px;
-        background: #333;
-        border-radius: 2px;
-      }
-      h2 {
-        margin-top: 20px;
+
+      .project-card h2 {
         margin-bottom: 10px;
-        font-size: 16px;
-      }
-      .error {
-        color: #d32f2f;
-      }
-      .specific-combo {
-        background: #e3f2fd;
-        border: 2px solid #1976d2;
-        border-radius: 4px;
-        padding: 15px;
-        margin: 20px 0;
-      }
-      .specific-combo h2 {
-        margin-top: 0;
         color: #1976d2;
+        font-size: 24px;
       }
-      .specific-combo .result {
-        font-size: 18px;
-        font-weight: bold;
-        margin-top: 10px;
+
+      .project-card p {
+        color: #666;
+        line-height: 1.6;
       }
-      .specific-combo .selected-list {
-        margin: 10px 0;
-        font-style: italic;
+
+      .project-card .arrow {
+        margin-left: 5px;
+        transition: margin-left 0.2s;
       }
-      .quantity-cell {
-        width: 60px;
-        text-align: center;
-      }
-      .quantity-cell input {
-        width: 50px;
-        text-align: center;
-        padding: 4px;
-      }
-      label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-      }
-      @media (max-width: 768px) {
-        .container {
-          grid-template-columns: 1fr;
-        }
+
+      .project-card:hover .arrow {
+        margin-left: 10px;
       }
     </style>
   </head>
   <body>
-    <div
-      style="
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-      "
-    >
-      <h1>VTES Crypt Draw Simulator</h1>
-      <div style="float: end">
-        <script
-          type="text/javascript"
-          src="https://storage.ko-fi.com/cdn/widget/Widget_2.js"
-        ></script>
-        <script type="text/javascript">
-          kofiwidget2.init("Support me on Ko-fi", "#72a4f2", "X8X31ZEU4T");
-          kofiwidget2.draw();
-        </script>
-      </div>
+    <h1>Projects</h1>
+
+    <div class="projects">
+      <a href="vtes-crypt-simulator/" class="project-card">
+        <h2>VTES Crypt Draw Simulator <span class="arrow">→</span></h2>
+        <p>
+          Monte Carlo simulation tool for Vampire: The Eternal Struggle deck
+          building. Calculate the probability of drawing specific vampires in
+          your opening hand, test different crypt compositions, and analyze
+          various card combinations.
+        </p>
+      </a>
     </div>
-    <div class="container">
-      <div>
-        <label for="input">Deck List (from vdb.im):</label>
-        <textarea
-          id="input"
-          placeholder="Enter your full deck export or just the crypt section...
-
-Example:
-
-Crypt (12 cards, min=24 max=28 avg=6.5)
-=======================================
-2x Aline Gädeke   7 POT PRE cel   baron   Brujah:6
-1x Rayne          2 pot                   Brujah:6
-
-Library section will be ignored."
-        ></textarea>
-      </div>
-      <div>
-        <label>Query by Attributes:</label>
-        <div
-          style="
-            background: #f9f9f9;
-            padding: 15px;
-            border: 1px solid #ccc;
-            margin-bottom: 10px;
-            border-radius: 4px;
-          "
-        >
-          <div
-            style="
-              display: grid;
-              grid-template-columns: 1fr;
-              gap: 10px;
-              margin-bottom: 10px;
-            "
-          >
-            <div>
-              <label style="font-size: 12px; font-weight: normal"
-                >Discipline (POT=superior, pot=inferior):</label
-              >
-              <input
-                type="text"
-                id="queryDiscipline"
-                placeholder="e.g., POT (superior), cel (inferior)"
-                style="width: 100%; padding: 5px"
-              />
-            </div>
-          </div>
-          <div
-            style="
-              display: grid;
-              grid-template-columns: 1fr 1fr 1fr 1fr;
-              gap: 10px;
-              margin-bottom: 10px;
-            "
-          >
-            <div>
-              <label style="font-size: 12px; font-weight: normal"
-                >Min Capacity:</label
-              >
-              <input
-                type="number"
-                id="queryMinCapacity"
-                placeholder="e.g., 7"
-                style="width: 100%; padding: 5px"
-              />
-            </div>
-            <div>
-              <label style="font-size: 12px; font-weight: normal"
-                >Max Capacity:</label
-              >
-              <input
-                type="number"
-                id="queryMaxCapacity"
-                placeholder="e.g., 10"
-                style="width: 100%; padding: 5px"
-              />
-            </div>
-            <div>
-              <label style="font-size: 12px; font-weight: normal">Title:</label>
-              <input
-                type="text"
-                id="queryTitle"
-                placeholder="e.g., baron"
-                style="width: 100%; padding: 5px"
-              />
-            </div>
-            <div>
-              <label style="font-size: 12px; font-weight: normal">Clan:</label>
-              <input
-                type="text"
-                id="queryClan"
-                placeholder="e.g., Brujah"
-                style="width: 100%; padding: 5px"
-              />
-            </div>
-          </div>
-          <button
-            id="calculateQuery"
-            style="
-              padding: 8px 15px;
-              background: #1976d2;
-              color: white;
-              border: none;
-              border-radius: 4px;
-              cursor: pointer;
-              font-weight: bold;
-            "
-          >
-            Calculate Probability
-          </button>
-          <button
-            id="clearQuery"
-            style="
-              padding: 8px 15px;
-              background: #666;
-              color: white;
-              border: none;
-              border-radius: 4px;
-              cursor: pointer;
-              margin-left: 10px;
-            "
-          >
-            Clear
-          </button>
-        </div>
-        <div id="queryResult" style="margin-bottom: 10px"></div>
-      </div>
-      <div>
-        <label for="output">Simulation Results:</label>
-        <div id="output">Enter crypt data to see simulation results...</div>
-      </div>
-    </div>
-
-    <script src="crypt-sim-ui.js"></script>
-    <script>
-      function renderResults(data) {
-        const output = document.getElementById("output");
-
-        if (data.error) {
-          output.innerHTML = `<p class="error">${data.error}</p>
-            <p>Expected format:<br>2x Vampire Name  7 POT PRE<br>1x Another Name  5 cel</p>`;
-          return;
-        }
-
-        let html = '<div class="stats">';
-        html += `<p><strong>Crypt size:</strong> ${data.deckSize} cards</p>`;
-        html += `<p><strong>Hand size:</strong> ${data.handSize}</p>`;
-        html += `<p><strong>Draws:</strong> ${data.draws.toLocaleString()}</p>`;
-        html += `<p><strong>Simulation time:</strong> ${data.simulationTime.toFixed(1)}ms</p>`;
-        html += "</div>";
-
-        html += "<h2>Distinct Vampires in Opening Hand</h2>";
-        html += "<table><thead><tr>";
-        html +=
-          "<th>Distinct</th><th>Count</th><th>Probability</th><th>Distribution</th>";
-        html += "</tr></thead><tbody>";
-
-        for (let d = 1; d <= data.handSize; d++) {
-          const count = data.diversity[d] || 0;
-          const prob = ((count / data.draws) * 100).toFixed(2);
-          const barWidth = Math.round((count / data.draws) * 200);
-
-          html += "<tr>";
-          html += `<td>${d}</td>`;
-          html += `<td>${count.toLocaleString()}</td>`;
-          html += `<td>${prob}%</td>`;
-          html += `<td><div class="bar-container"><div class="bar" style="width: ${barWidth}px"></div></div></td>`;
-          html += "</tr>";
-        }
-
-        html += "</tbody></table>";
-
-        html += "<h2>Probability of Each Vampire Appearing in Hand</h2>";
-        html +=
-          '<p style="margin-bottom: 10px;"><em>Enter quantities (1-4 total) to calculate the probability of drawing at least those vampires:</em></p>';
-        html += "<table><thead><tr>";
-        html +=
-          "<th class='quantity-cell'>Qty</th><th>Vampire</th><th>Cap</th><th>Disciplines</th><th>Title</th><th>Clan</th><th>Copies</th><th>Count</th><th>Probability</th><th>Distribution</th>";
-        html += "</tr></thead><tbody>";
-
-        for (const vampire of data.vampires) {
-          const prob = (vampire.probability * 100).toFixed(2);
-          const barWidth = Math.round(vampire.probability * 200);
-
-          // Format disciplines
-          const supDisc = vampire.disciplines?.superior?.join(" ") || "";
-          const infDisc =
-            vampire.disciplines?.inferior
-              ?.map((d) => d.toLowerCase())
-              .join(" ") || "";
-          const disciplines = [supDisc, infDisc].filter((d) => d).join(" ");
-
-          html += "<tr>";
-          html += `<td class='quantity-cell'><input type="number" min="0" max="4" value="0" class="vamp-quantity" data-name="${vampire.name}" oninput="handleVampireSelection()"></td>`;
-          html += `<td>${vampire.name}</td>`;
-          html += `<td>${vampire.capacity || ""}</td>`;
-          html += `<td style="font-size: 11px;">${disciplines}</td>`;
-          html += `<td>${vampire.title || ""}</td>`;
-          html += `<td>${vampire.clan || ""}</td>`;
-          html += `<td>${vampire.copies}x</td>`;
-          html += `<td>${vampire.appearances.toLocaleString()}</td>`;
-          html += `<td>${prob}%</td>`;
-          html += `<td><div class="bar-container"><div class="bar" style="width: ${barWidth}px"></div></div></td>`;
-          html += "</tr>";
-        }
-
-        html += "</tbody></table>";
-        html += '<div id="specific-combo-result"></div>';
-        output.innerHTML = html;
-      }
-
-      function debounce(func, wait) {
-        let timeout;
-        return function (...args) {
-          clearTimeout(timeout);
-          timeout = setTimeout(() => func.apply(this, args), wait);
-        };
-      }
-
-      let currentSimulationData = null;
-
-      function updateOutput() {
-        const input = document.getElementById("input").value;
-        const output = document.getElementById("output");
-
-        if (!input.trim()) {
-          output.innerHTML =
-            "<p>Enter crypt data to see simulation results...</p>";
-          currentSimulationData = null;
-          return;
-        }
-
-        currentSimulationData = runSimulation(input);
-        renderResults(currentSimulationData);
-      }
-
-      function handleVampireSelection() {
-        const inputs = document.querySelectorAll(".vamp-quantity");
-        const selected = [];
-        let total = 0;
-
-        inputs.forEach((input) => {
-          const qty = parseInt(input.value) || 0;
-          if (qty > 0) {
-            selected.push({ name: input.dataset.name, qty });
-            total += qty;
-          }
-        });
-
-        const resultDiv = document.getElementById("specific-combo-result");
-
-        if (total === 0) {
-          resultDiv.innerHTML = "";
-          return;
-        }
-
-        if (total > 4) {
-          const selectedText = selected
-            .map((s) => `${s.qty}x ${s.name}`)
-            .join(", ");
-          resultDiv.innerHTML = `<div class="specific-combo">
-            <h2>Specific Combination</h2>
-            <p>Total: ${total} vampires. Maximum is 4 (hand size).</p>
-            <p class="selected-list">Currently selected: ${selectedText}</p>
-          </div>`;
-          return;
-        }
-
-        // Build target array with duplicates
-        const targetVampires = [];
-        selected.forEach((s) => {
-          for (let i = 0; i < s.qty; i++) {
-            targetVampires.push(s.name);
-          }
-        });
-
-        // Calculate probability for this specific combination
-        const result = calculateSpecificCombination(
-          currentSimulationData.deck,
-          targetVampires,
-          currentSimulationData.draws,
-          currentSimulationData.handSize,
-        );
-
-        const selectedText = selected
-          .map((s) => `${s.qty}x ${s.name}`)
-          .join(", ");
-        const prob = (result.probability * 100).toFixed(2);
-        const exactOrAtLeast = total === 4 ? "exactly" : "at least";
-        resultDiv.innerHTML = `<div class="specific-combo">
-          <h2>Specific Combination Probability</h2>
-          <p class="selected-list">Target: ${selectedText}</p>
-          <p class="result">Probability of opening with ${exactOrAtLeast} this combination: ${prob}%</p>
-          <p>Occurred in ${result.count.toLocaleString()} out of ${currentSimulationData.draws.toLocaleString()} draws</p>
-        </div>`;
-      }
-
-      const debouncedUpdate = debounce(updateOutput, 500);
-      document
-        .getElementById("input")
-        .addEventListener("input", debouncedUpdate);
-
-      // Query functionality
-      document
-        .getElementById("calculateQuery")
-        .addEventListener("click", () => {
-          if (!currentSimulationData) {
-            document.getElementById("queryResult").innerHTML =
-              '<p class="error">Please enter a deck first.</p>';
-            return;
-          }
-
-          const query = {};
-          const discipline = document
-            .getElementById("queryDiscipline")
-            .value.trim();
-          const minCapacity = document.getElementById("queryMinCapacity").value;
-          const maxCapacity = document.getElementById("queryMaxCapacity").value;
-          const title = document.getElementById("queryTitle").value.trim();
-          const clan = document.getElementById("queryClan").value.trim();
-
-          if (discipline) {
-            query.discipline = discipline;
-          }
-          if (minCapacity) query.minCapacity = parseInt(minCapacity);
-          if (maxCapacity) query.maxCapacity = parseInt(maxCapacity);
-          if (title) query.title = title;
-          if (clan) query.clan = clan;
-
-          if (Object.keys(query).length === 0) {
-            document.getElementById("queryResult").innerHTML =
-              '<p class="error">Please enter at least one query parameter.</p>';
-            return;
-          }
-
-          const result = simulateWithQuery(
-            currentSimulationData.deck,
-            currentSimulationData.vampireData,
-            currentSimulationData.draws,
-            currentSimulationData.handSize,
-            query,
-          );
-
-          const prob = (result.probability * 100).toFixed(2);
-
-          // Build query description
-          const queryParts = [];
-          if (query.discipline) {
-            let discText = query.discipline.toUpperCase();
-            if (query.disciplineLevel === "superior")
-              discText += " (superior only)";
-            else if (query.disciplineLevel === "inferior")
-              discText += " (any level)";
-            queryParts.push(`discipline: ${discText}`);
-          }
-          if (
-            query.minCapacity !== undefined &&
-            query.maxCapacity !== undefined
-          ) {
-            queryParts.push(
-              `capacity: ${query.minCapacity}-${query.maxCapacity}`,
-            );
-          } else if (query.minCapacity !== undefined) {
-            queryParts.push(`capacity ≥ ${query.minCapacity}`);
-          } else if (query.maxCapacity !== undefined) {
-            queryParts.push(`capacity ≤ ${query.maxCapacity}`);
-          }
-          if (query.title) queryParts.push(`title: ${query.title}`);
-          if (query.clan) queryParts.push(`clan: ${query.clan}`);
-
-          const queryDesc = queryParts.join(", ");
-
-          document.getElementById("queryResult").innerHTML = `
-          <div class="specific-combo">
-            <h2>Query Result</h2>
-            <p class="selected-list">At least 1 vampire with: ${queryDesc}</p>
-            <p class="result">Probability: ${prob}%</p>
-            <p>Occurred in ${result.count.toLocaleString()} out of ${currentSimulationData.draws.toLocaleString()} draws</p>
-          </div>
-        `;
-        });
-
-      document.getElementById("clearQuery").addEventListener("click", () => {
-        document.getElementById("queryDiscipline").value = "";
-        document.getElementById("queryDisciplineLevel").value = "";
-        document.getElementById("queryMinCapacity").value = "";
-        document.getElementById("queryMaxCapacity").value = "";
-        document.getElementById("queryTitle").value = "";
-        document.getElementById("queryClan").value = "";
-        document.getElementById("queryResult").innerHTML = "";
-      });
-    </script>
   </body>
 </html>

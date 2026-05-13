@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>V:TES Crypt Simulator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="header">
+      <h1>V:TES Crypt Draw Simulator</h1>
+      <div id="kofi-container">
+        <script
+          type="text/javascript"
+          src="https://storage.ko-fi.com/cdn/widget/Widget_2.js"
+        ></script>
+        <script type="text/javascript">
+          kofiwidget2.init("Support me on Ko-fi", "#72a4f2", "X8X31ZEU4T");
+          kofiwidget2.draw();
+        </script>
+      </div>
+    </div>
+
+    <div class="container">
+      <div>
+        <label for="input">Deck List (from vdb.im):</label>
+        <textarea
+          id="input"
+          placeholder="Enter your full deck export or just the crypt section...
+
+Example:
+
+Crypt (12 cards, min=24 max=28 avg=6.5)
+=======================================
+2x Aline Gädeke   7 POT PRE cel   baron   Brujah:6
+1x Rayne          2 pot                   Brujah:6
+
+Library section will be ignored."
+        ></textarea>
+      </div>
+
+      <div>
+        <label for="output">Simulation Results:</label>
+        <div id="output"></div>
+      </div>
+
+      <div>
+        <label>Query by Attributes:</label>
+        <div class="query-section">
+          <div class="query-grid">
+            <div>
+              <label class="query-label"
+                >Discipline (POT=superior, pot=inferior):</label
+              >
+              <input
+                type="text"
+                id="queryDiscipline"
+                placeholder="e.g., POT (superior), cel (inferior)"
+              />
+            </div>
+          </div>
+
+          <div class="query-grid-4col">
+            <div>
+              <label class="query-label">Min Capacity:</label>
+              <input
+                type="number"
+                id="queryMinCapacity"
+                placeholder="e.g., 7"
+              />
+            </div>
+            <div>
+              <label class="query-label">Max Capacity:</label>
+              <input
+                type="number"
+                id="queryMaxCapacity"
+                placeholder="e.g., 10"
+              />
+            </div>
+            <div>
+              <label class="query-label">Title:</label>
+              <input type="text" id="queryTitle" placeholder="e.g., baron" />
+            </div>
+            <div>
+              <label class="query-label">Clan:</label>
+              <input type="text" id="queryClan" placeholder="e.g., Brujah" />
+            </div>
+          </div>
+
+          <button id="calculateQuery" class="btn btn-primary">
+            Calculate Probability
+          </button>
+          <button id="clearQuery" class="btn btn-secondary">Clear</button>
+        </div>
+        <div id="queryResult"></div>
+      </div>
+    </div>
+
+    <script type="module" src="main.js"></script>
+  </body>
+</html>

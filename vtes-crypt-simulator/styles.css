@@ -1,0 +1,274 @@
+/* VTES Crypt Simulator Styles */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: monospace;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+h2 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+/* Layout */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.kofi-container {
+  float: end;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Form Elements */
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+textarea {
+  width: 100%;
+  height: 200px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 5px;
+}
+
+/* Query Section */
+.query-section {
+  background: #f9f9f9;
+  padding: 15px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+.query-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.query-grid-4col {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.query-label {
+  font-size: 12px;
+  font-weight: normal;
+}
+
+/* Buttons */
+.btn {
+  padding: 8px 15px;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-primary {
+  background: #1976d2;
+}
+
+.btn-primary:hover {
+  background: #1565c0;
+}
+
+.btn-secondary {
+  background: #666;
+  margin-left: 10px;
+}
+
+.btn-secondary:hover {
+  background: #555;
+}
+
+/* Output Section */
+#output {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  overflow-y: auto;
+  font-size: 14px;
+}
+
+.stats {
+  margin-bottom: 20px;
+}
+
+.stats p {
+  margin: 5px 0;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background: #e0e0e0;
+}
+
+.quantity-cell {
+  width: 100px;
+  text-align: center;
+}
+
+/* Quantity Control Component */
+.quantity-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.quantity-control input {
+  width: 40px;
+  text-align: center;
+  padding: 6px 4px;
+  border: none;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  font-size: 14px;
+  -moz-appearance: textfield;
+}
+
+.quantity-control input::-webkit-outer-spin-button,
+.quantity-control input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.quantity-control input:focus {
+  outline: none;
+  background: #f0f0f0;
+}
+
+.qty-btn {
+  background: #f5f5f5;
+  border: none;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  transition: background 0.2s;
+  user-select: none;
+}
+
+.qty-btn:hover {
+  background: #e0e0e0;
+}
+
+.qty-btn:active {
+  background: #d0d0d0;
+}
+
+.qty-minus {
+  border-right: none;
+}
+
+.qty-plus {
+  border-left: none;
+}
+
+/* Progress Bar */
+.bar-container {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.bar {
+  height: 20px;
+  background: #333;
+  border-radius: 2px;
+}
+
+/* Messages */
+.error {
+  color: #d32f2f;
+}
+
+/* Specific Combo Section */
+.specific-combo {
+  background: #e3f2fd;
+  border: 2px solid #1976d2;
+  border-radius: 4px;
+  padding: 15px;
+  margin: 20px 0;
+}
+
+.specific-combo h2 {
+  margin-top: 0;
+  color: #1976d2;
+}
+
+.specific-combo .result {
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.specific-combo .selected-list {
+  margin: 10px 0;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+
+  .query-grid-4col {
+    grid-template-columns: 1fr 1fr;
+  }
+}
