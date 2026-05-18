@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lega Barghigiana 2026 - Classifica</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <img src="./image.png" alt="VTES Logo" class="logo" />
+
+        <h1>Lega Barghigiana 2026</h1>
+      </div>
+
+      <div class="section">
+        <h2>Classifica</h2>
+        <table id="standingsTable">
+          <thead>
+            <tr>
+              <th>Pos.</th>
+              <th>Giocatore</th>
+              <th>GW</th>
+              <th>VP</th>
+              <th>Giorni</th>
+            </tr>
+          </thead>
+          <tbody id="standingsBody"></tbody>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2>Dettaglio Punteggi</h2>
+        <p class="info-text">
+          I migliori 6 giorni per ogni giocatore sono evidenziati in verde.
+        </p>
+        <div id="scoreDetails"></div>
+      </div>
+    </div>
+
+    <script src="standings.js"></script>
+  </body>
+</html>
