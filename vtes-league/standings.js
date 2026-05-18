@@ -1,143 +1,185 @@
-// League configuration
-const TOTAL_DAYS = 10;
-const BEST_DAYS_COUNT = 6;
+// URL del Google Sheets (formato HTML pubblico)
+const SHEET_URL =
+  "https://docs.google.com/spreadsheets/d/14vv2ViGi0bLs7k7AQHDAk0Ddk1b5aa12wLI-ckTlUE4/gviz/tq?tqx=out:json&gid=0";
 
-// Load data from localStorage
-function loadData() {
-  const saved = localStorage.getItem("vtesLeagueData");
-  if (saved) {
-    return JSON.parse(saved);
+// Numero di giorni da considerare per la classifica
+const DAYS_TO_COUNT = 6;
+
+// Carica e processa i dati
+async function loadData() {
+  try {
+    const response = await fetch(SHEET_URL);
+    const text = await response.text();
+
+    // Google Sheets restituisce JSON con padding, lo dobbiamo rimuovere
+    const jsonData = JSON.parse(text.substring(47).slice(0, -2));
+
+    return parseGoogleSheetsData(jsonData);
+  } catch (error) {
+    console.error("Errore nel caricamento dei dati:", error);
+    return [];
   }
-  return { participants: [], scores: {} };
 }
 
-// Calculate standings
-function calculateStandings(leagueData) {
-  const standings = [];
+// Parsea i dati dalla risposta di Google Sheets
+function parseGoogleSheetsData(data) {
+  const players = [];
+  const rows = data.table.rows;
 
-  leagueData.participants.forEach((participant) => {
-    const scores = leagueData.scores[participant];
-    const dayScores = [];
+  if (rows.length < 2) return players; // Nessun dato
 
-    // Collect all day scores
-    for (let i = 1; i <= TOTAL_DAYS; i++) {
-      const dayKey = `day${i}`;
-      if (scores[dayKey]) {
-        dayScores.push({
-          day: i,
-          gw: scores[dayKey].gw,
-          vp: scores[dayKey].vp,
+  // Prima riga contiene gli header, saltiamola
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    if (!row.c || !row.c[0] || !row.c[0].v) continue; // Riga vuota
+
+    const playerName = row.c[0].v;
+    if (!playerName) continue;
+
+    const gameResults = [];
+    let totalGW = 0;
+    let totalVP = 0;
+
+    // Ogni giornata ha 2 colonne: GW e VP
+    // Le colonne partono da indice 1 (0 è il nome del giocatore)
+    // Formato: G1 GW (idx 1), G1 VP (idx 2), G2 GW (idx 3), G2 VP (idx 4), ...
+    let dayIndex = 0;
+    for (let col = 1; col < row.c.length - 11; col += 2) {
+      // -11 perché le ultime colonne sono i totali
+      const gwCell = row.c[col];
+      const vpCell = row.c[col + 1];
+
+      if (!gwCell && !vpCell) break; // Fine dei dati di giornate
+
+      const gw = gwCell && gwCell.v !== null ? gwCell.v : 0;
+      const vp = vpCell && vpCell.v !== null ? vpCell.v : 0;
+
+      if (gw !== 0 || vp !== 0) {
+        // Solo se ha giocato
+        const dayScore = gw * 1000 + vp;
+        gameResults.push({
+          day: dayIndex + 1,
+          gw: gw,
+          vp: vp,
+          score: dayScore,
         });
+
+        totalGW += gw;
+        totalVP += vp;
       }
+
+      dayIndex++;
     }
 
-    // Sort by GW descending, then VP descending to get best days
-    const sortedDays = [...dayScores].sort((a, b) => {
-      if (b.gw !== a.gw) return b.gw - a.gw;
-      return b.vp - a.vp;
+    // Ordina i risultati per punteggio (migliori prima)
+    gameResults.sort((a, b) => b.score - a.score);
+
+    // Prendi i migliori N giorni
+    const bestDays = gameResults.slice(0, DAYS_TO_COUNT);
+    const bestDaysScore = bestDays.reduce((sum, day) => sum + day.score, 0);
+
+    players.push({
+      name: playerName,
+      totalGW: totalGW,
+      totalVP: totalVP,
+      daysPlayed: gameResults.length,
+      bestDaysScore: bestDaysScore,
+      allDays: gameResults,
+      bestDays: bestDays.map((d) => d.day),
     });
+  }
 
-    // Take best 6 days
-    const bestDays = sortedDays.slice(
-      0,
-      Math.min(BEST_DAYS_COUNT, sortedDays.length),
-    );
-    const bestDayNumbers = new Set(bestDays.map((d) => d.day));
-
-    // Calculate totals from best days
-    const totalGW = bestDays.reduce((sum, day) => sum + day.gw, 0);
-    const totalVP = bestDays.reduce((sum, day) => sum + day.vp, 0);
-
-    standings.push({
-      participant,
-      totalGW,
-      totalVP,
-      daysPlayed: dayScores.length,
-      bestDays: bestDayNumbers,
-      allScores: dayScores,
-    });
-  });
-
-  // Sort standings by GW descending, then VP descending
-  standings.sort((a, b) => {
-    if (b.totalGW !== a.totalGW) return b.totalGW - a.totalGW;
+  // Ordina per punteggio migliori giorni
+  players.sort((a, b) => {
+    if (b.bestDaysScore !== a.bestDaysScore) {
+      return b.bestDaysScore - a.bestDaysScore;
+    }
+    // In caso di parità, ordina per VP totali
     return b.totalVP - a.totalVP;
   });
 
-  return standings;
+  return players;
 }
 
-// Display standings
-function displayStandings() {
-  const leagueData = loadData();
-  const standings = calculateStandings(leagueData);
+// Converte un punteggio numerico in formato leggibile (es. 1006 -> "1 GW 6 VP")
+function formatScore(score) {
+  const gw = Math.floor(score / 1000);
+  const vp = score % 1000;
+  if (gw === 0 && vp === 0) return "0";
+  if (gw === 0) return `${vp} VP`;
+  if (vp === 0) return `${gw} GW`;
+  return `${gw} GW ${vp} VP`;
+}
+
+// Renderizza la tabella della classifica
+function renderStandings(players) {
   const tbody = document.getElementById("standingsBody");
   tbody.innerHTML = "";
 
-  if (standings.length === 0) {
-    const row = document.createElement("tr");
-    row.innerHTML =
-      '<td colspan="5" style="text-align: center;">Nessun dato disponibile</td>';
-    tbody.appendChild(row);
-    return;
-  }
-
-  standings.forEach((standing, index) => {
+  players.forEach((player, index) => {
     const row = document.createElement("tr");
     row.innerHTML = `
             <td>${index + 1}</td>
-            <td><strong>${standing.participant}</strong></td>
-            <td>${standing.totalGW}</td>
-            <td>${standing.totalVP.toFixed(1)}</td>
-            <td>${standing.daysPlayed}</td>
+            <td>${player.name}</td>
+            <td>${player.totalGW}</td>
+            <td>${player.totalVP}</td>
+            <td>${player.daysPlayed}</td>
         `;
     tbody.appendChild(row);
   });
 }
 
-// Display score details
-function displayScoreDetails() {
-  const leagueData = loadData();
-  const standings = calculateStandings(leagueData);
-  const detailsDiv = document.getElementById("scoreDetails");
-  detailsDiv.innerHTML = "";
+// Renderizza i dettagli dei punteggi
+function renderScoreDetails(players) {
+  const container = document.getElementById("scoreDetails");
+  container.innerHTML = "";
 
-  if (standings.length === 0) {
-    detailsDiv.innerHTML =
-      '<p style="text-align: center; color: #999;">Nessun punteggio disponibile</p>';
-    return;
-  }
+  players.forEach((player) => {
+    const playerDiv = document.createElement("div");
+    playerDiv.className = "player-compact";
 
-  standings.forEach((standing) => {
-    const participantDiv = document.createElement("div");
-    participantDiv.className = "participant-scores";
+    // Header del giocatore
+    const header = document.createElement("div");
+    header.className = "player-compact-header";
+    header.innerHTML = `
+            <span class="player-name">${player.name}</span>
+            <span class="player-score">Totale: ${formatScore(player.bestDaysScore)}</span>
+        `;
+    playerDiv.appendChild(header);
 
-    let html = `<h3>${standing.participant}</h3>`;
+    // Badges dei punteggi
+    const scoresDiv = document.createElement("div");
+    scoresDiv.className = "score-badges";
 
-    // Sort scores by day number
-    const sortedScores = standing.allScores.sort((a, b) => a.day - b.day);
-
-    sortedScores.forEach((score) => {
-      const isBest = standing.bestDays.has(score.day);
-      const className = isBest ? "day-score best" : "day-score";
-      html += `
-                <span class="${className}">
-                    Giorno ${score.day}: ${score.gw} GW, ${score.vp} VP
-                </span>
+    player.allDays.forEach((day) => {
+      const isBestDay = player.bestDays.includes(day.day);
+      const badge = document.createElement("div");
+      badge.className = `score-badge${isBestDay ? " best" : ""}`;
+      badge.innerHTML = `
+                <div class="badge-day">G${day.day}</div>
+                <div class="badge-score">${formatScore(day.score)}</div>
             `;
+      scoresDiv.appendChild(badge);
     });
 
-    participantDiv.innerHTML = html;
-    detailsDiv.appendChild(participantDiv);
+    playerDiv.appendChild(scoresDiv);
+    container.appendChild(playerDiv);
   });
 }
 
-// Initialize
-displayStandings();
-displayScoreDetails();
+// Inizializza l'applicazione
+async function init() {
+  const players = await loadData();
 
-// Auto-refresh every 30 seconds
-setInterval(() => {
-  displayStandings();
-  displayScoreDetails();
-}, 30000);
+  if (players.length === 0) {
+    document.getElementById("standingsBody").innerHTML =
+      '<tr><td colspan="5">Errore nel caricamento dei dati</td></tr>';
+    return;
+  }
+
+  renderStandings(players);
+  renderScoreDetails(players);
+}
+
+// Avvia al caricamento della pagina
+document.addEventListener("DOMContentLoaded", init);

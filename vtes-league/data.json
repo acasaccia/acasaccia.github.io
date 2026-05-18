@@ -1,0 +1,32 @@
+{
+  "players": [
+    {
+      "name": "Alessandro",
+      "games": [
+        { "day": 1, "gw": 1, "vp": 5 },
+        { "day": 2, "gw": 0, "vp": 1 }
+      ]
+    },
+    {
+      "name": "Simone",
+      "games": [
+        { "day": 1, "gw": 1, "vp": 2 },
+        { "day": 2, "gw": 0, "vp": 2 }
+      ]
+    },
+    {
+      "name": "Gianmarco",
+      "games": [
+        { "day": 1, "gw": 0, "vp": 3 },
+        { "day": 2, "gw": 0, "vp": 2 }
+      ]
+    },
+    {
+      "name": "Andrea",
+      "games": [
+        { "day": 1, "gw": 0, "vp": 0 },
+        { "day": 2, "gw": 0, "vp": 1 }
+      ]
+    }
+  ]
+}
