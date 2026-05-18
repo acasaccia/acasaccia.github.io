@@ -21,20 +21,36 @@ async function loadData() {
   }
 }
 
-// Parsea i dati dalla risposta di Google Sheets
+// Estrae i dati dalla risposta di Google Sheets
 function parseGoogleSheetsData(data) {
   const players = [];
   const rows = data.table.rows;
 
-  if (rows.length < 2) return players; // Nessun dato
+  if (rows.length < 1) return players; // Nessun dato
 
-  // Prima riga contiene gli header, saltiamola
-  for (let i = 1; i < rows.length; i++) {
+  console.log("Total rows:", rows.length);
+
+  // Controlla se la prima riga è header o dati
+  const firstRow = rows[0];
+  let startIndex = 0;
+
+  // Se la prima cella della prima riga è "Giocatore" è un header
+  if (firstRow.c && firstRow.c[0] && firstRow.c[0].v === "Giocatore") {
+    startIndex = 1; // Salta gli header
+    console.log("Header trovato, inizio da riga 1");
+  } else {
+    startIndex = 0; // Inizia dalla prima riga
+    console.log("Nessun header, inizio da riga 0");
+  }
+
+  for (let i = startIndex; i < rows.length; i++) {
     const row = rows[i];
     if (!row.c || !row.c[0] || !row.c[0].v) continue; // Riga vuota
 
     const playerName = row.c[0].v;
     if (!playerName) continue;
+
+    console.log("Processing player:", playerName);
 
     const gameResults = [];
     let totalGW = 0;
@@ -138,31 +154,32 @@ function renderScoreDetails(players) {
     const playerDiv = document.createElement("div");
     playerDiv.className = "player-compact";
 
-    // Header del giocatore
-    const header = document.createElement("div");
-    header.className = "player-compact-header";
-    header.innerHTML = `
-            <span class="player-name">${player.name}</span>
-            <span class="player-score">Totale: ${formatScore(player.bestDaysScore)}</span>
-        `;
-    playerDiv.appendChild(header);
+    // Nome giocatore
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "player-name";
+    nameSpan.textContent = `${player.name}: `;
+    playerDiv.appendChild(nameSpan);
 
-    // Badges dei punteggi
-    const scoresDiv = document.createElement("div");
-    scoresDiv.className = "score-badges";
-
-    player.allDays.forEach((day) => {
+    // Badges dei punteggi inline
+    player.allDays.forEach((day, index) => {
       const isBestDay = player.bestDays.includes(day.day);
-      const badge = document.createElement("div");
-      badge.className = `score-badge${isBestDay ? " best" : ""}`;
-      badge.innerHTML = `
-                <div class="badge-day">G${day.day}</div>
-                <div class="badge-score">${formatScore(day.score)}</div>
-            `;
-      scoresDiv.appendChild(badge);
+      const badge = document.createElement("span");
+      badge.className = `score-badge-inline${isBestDay ? " best" : ""}`;
+      badge.textContent = `G${day.day} ${formatScore(day.score)}`;
+      playerDiv.appendChild(badge);
+
+      // Aggiungi spazio tra i badge
+      if (index < player.allDays.length - 1) {
+        playerDiv.appendChild(document.createTextNode(" "));
+      }
     });
 
-    playerDiv.appendChild(scoresDiv);
+    // Totale alla fine
+    const totalSpan = document.createElement("span");
+    totalSpan.className = "player-total";
+    totalSpan.textContent = ` = ${formatScore(player.bestDaysScore)}`;
+    playerDiv.appendChild(totalSpan);
+
     container.appendChild(playerDiv);
   });
 }

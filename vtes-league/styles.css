@@ -250,99 +250,66 @@ tbody tr:nth-child(even):hover {
     }
 }
 
-/* Player Details Section - Compact */
+/* Player Details Section - Ultra Compact */
 .player-compact {
-    margin-bottom: 25px;
-    padding: 15px;
+    margin-bottom: 8px;
+    padding: 8px 12px;
     background: #252525;
-    border-radius: 8px;
-    border: 1px solid #2a2a2a;
+    border-radius: 4px;
+    border-left: 3px solid #2a2a2a;
+    line-height: 1.8;
+    transition: all 0.2s;
 }
 
-.player-compact-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #dc3545;
+.player-compact:hover {
+    background: #2a2a2a;
+    border-left-color: #dc3545;
 }
 
 .player-name {
     color: #d4af37;
-    font-size: 1.2em;
     font-weight: 600;
+    font-size: 0.95em;
 }
 
-.player-score {
-    color: #28a745;
-    font-weight: 600;
-    font-size: 1.1em;
-}
-
-.score-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.score-badge {
+.score-badge-inline {
+    display: inline-block;
     background: #1a1a1a;
     border: 1px solid #333;
-    border-radius: 6px;
-    padding: 8px 12px;
-    min-width: 100px;
-    text-align: center;
-    transition: all 0.3s;
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-size: 0.85em;
+    color: #bbb;
+    transition: all 0.2s;
 }
 
-.score-badge:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+.score-badge-inline:hover {
+    background: #2a2a2a;
+    transform: translateY(-1px);
 }
 
-.score-badge.best {
+.score-badge-inline.best {
     background: #1a3a1a;
     border-color: #28a745;
-    box-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
-}
-
-.badge-day {
-    color: #999;
-    font-size: 0.75em;
+    color: #28a745;
     font-weight: 600;
-    margin-bottom: 6px;
-    text-transform: uppercase;
 }
 
-.score-badge.best .badge-day {
-    color: #28a745;
-}
-
-.badge-score {
-    font-size: 0.95em;
-    font-weight: 700;
+.player-total {
     color: #d4af37;
-    margin-top: 2px;
-}
-
-.score-badge.best .badge-score {
-    color: #28a745;
+    font-weight: 700;
+    margin-left: 8px;
+    font-size: 0.95em;
 }
 
 @media (max-width: 768px) {
-    .player-compact-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
+    .player-compact {
+        font-size: 0.9em;
     }
     
-    .score-badges {
-        justify-content: center;
-    }
-    
-    .score-badge {
-        min-width: 90px;
+    .score-badge-inline {
+        font-size: 0.8em;
+        padding: 1px 4px;
     }
 }
 
