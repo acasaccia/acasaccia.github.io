@@ -217,35 +217,15 @@ const SpecificComboResult = ({ selected, total, result, draws }) => {
 };
 
 // Component: Query Result
-const QueryResult = ({ query, result, draws }) => {
+const QueryResult = ({ query, queryText, result, draws }) => {
   if (!query) return null;
 
   const prob = (result.probability * 100).toFixed(2);
 
-  // Build query description
-  const queryParts = [];
-  if (query.discipline) {
-    let discText = query.discipline.toUpperCase();
-    if (query.disciplineLevel === "superior") discText += " (superior only)";
-    else if (query.disciplineLevel === "inferior") discText += " (any level)";
-    queryParts.push(`discipline: ${discText}`);
-  }
-  if (query.minCapacity !== undefined && query.maxCapacity !== undefined) {
-    queryParts.push(`capacity: ${query.minCapacity}-${query.maxCapacity}`);
-  } else if (query.minCapacity !== undefined) {
-    queryParts.push(`capacity ≥ ${query.minCapacity}`);
-  } else if (query.maxCapacity !== undefined) {
-    queryParts.push(`capacity ≤ ${query.maxCapacity}`);
-  }
-  if (query.title) queryParts.push(`title: ${query.title}`);
-  if (query.clan) queryParts.push(`clan: ${query.clan}`);
-
-  const queryDesc = queryParts.join(", ");
-
   return html`
     <div class="specific-combo">
       <h2>Query Result</h2>
-      <p class="selected-list">At least 1 vampire with: ${queryDesc}</p>
+      <p class="selected-list">Query: ${queryText}</p>
       <p class="result">Probability: ${prob}%</p>
       <p>
         Occurred in ${result.count.toLocaleString()} out of
@@ -290,11 +270,16 @@ export function renderSpecificCombo(selected, total, result, draws) {
   }
 }
 
-export function renderQueryResult(query, result, draws) {
+export function renderQueryResult(query, queryText, result, draws) {
   const container = document.getElementById("queryResult");
   if (container) {
     render(
-      html`<${QueryResult} query=${query} result=${result} draws=${draws} />`,
+      html`<${QueryResult}
+        query=${query}
+        queryText=${queryText}
+        result=${result}
+        draws=${draws}
+      />`,
       container,
     );
   }

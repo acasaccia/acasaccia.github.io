@@ -58,7 +58,8 @@ textarea {
 }
 
 input[type="text"],
-input[type="number"] {
+input[type="number"],
+.query-input {
   width: 100%;
   padding: 5px;
 }
@@ -89,6 +90,17 @@ input[type="number"] {
 .query-label {
   font-size: 12px;
   font-weight: normal;
+}
+
+.query-input {
+  resize: vertical;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.query-help {
+  margin: 8px 0 12px;
+  font-size: 12px;
 }
 
 /* Buttons */

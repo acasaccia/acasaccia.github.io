@@ -96,22 +96,13 @@ function handleCalculateQuery() {
     return;
   }
 
-  const query = {};
-  const discipline = document.getElementById("queryDiscipline").value.trim();
-  const minCapacity = document.getElementById("queryMinCapacity").value;
-  const maxCapacity = document.getElementById("queryMaxCapacity").value;
-  const title = document.getElementById("queryTitle").value.trim();
-  const clan = document.getElementById("queryClan").value.trim();
+  const queryText = document.getElementById("query").value.trim();
+  let query;
 
-  if (discipline) query.discipline = discipline;
-  if (minCapacity) query.minCapacity = parseInt(minCapacity);
-  if (maxCapacity) query.maxCapacity = parseInt(maxCapacity);
-  if (title) query.title = title;
-  if (clan) query.clan = clan;
-
-  if (Object.keys(query).length === 0) {
-    const container = document.getElementById("queryResult");
-    renderError(container, "Please enter at least one query parameter.");
+  try {
+    query = parseQuery(queryText);
+  } catch (error) {
+    renderError(document.getElementById("queryResult"), error.message);
     return;
   }
 
@@ -123,16 +114,60 @@ function handleCalculateQuery() {
     query,
   );
 
-  renderQueryResult(query, result, currentSimulationData.draws);
+  renderQueryResult(query, queryText, result, currentSimulationData.draws);
+}
+
+function parseQuery(text) {
+  if (!text) throw new Error("Please enter a query.");
+
+  const normalized = text.replace(/\s+/g, " ").trim();
+  const match = normalized.match(
+    /^at least (\d+) distinct(?: vampires?)? where (.+)$/i,
+  );
+
+  if (!match) {
+    throw new Error(
+      'Use the format: "at least 2 distinct where title = baron".',
+    );
+  }
+
+  const minDistinct = parseInt(match[1]);
+  if (minDistinct < 1) throw new Error("N must be at least 1.");
+
+  const query = { minDistinct };
+  const expressions = match[2].split(/\s+and\s+/i);
+
+  expressions.forEach((expression) => {
+    const filter = expression.match(
+      /^(title|clan|discipline|capacity)\s*(=|>=|<=)\s*(.+)$/i,
+    );
+    if (!filter) {
+      throw new Error(`Could not understand filter: "${expression}".`);
+    }
+
+    const field = filter[1].toLowerCase();
+    const operator = filter[2];
+    const value = filter[3].trim().replace(/^(["'])(.*)\1$/, "$2");
+
+    if (field === "capacity") {
+      const capacity = Number(value);
+      if (!Number.isInteger(capacity) || operator === "=") {
+        throw new Error("Capacity must use >= or <= with a whole number.");
+      }
+      query[operator === ">=" ? "minCapacity" : "maxCapacity"] = capacity;
+    } else if (operator !== "=") {
+      throw new Error(`${field} only supports the = operator.`);
+    } else {
+      query[field] = value;
+    }
+  });
+
+  return query;
 }
 
 // Handle clear query
 function handleClearQuery() {
-  document.getElementById("queryDiscipline").value = "";
-  document.getElementById("queryMinCapacity").value = "";
-  document.getElementById("queryMaxCapacity").value = "";
-  document.getElementById("queryTitle").value = "";
-  document.getElementById("queryClan").value = "";
+  document.getElementById("query").value = "";
   clearQueryResult();
 }
 

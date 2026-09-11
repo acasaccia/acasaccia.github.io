@@ -248,6 +248,7 @@ export function simulateWithQuery(deck, vampireData, draws, handSize, query) {
 
 function checkHandQuery(hand, vampireData, query) {
   const uniqueVampires = [...new Set(hand)];
+  let matchingVampires = 0;
 
   for (const vampireName of uniqueVampires) {
     const vampire = vampireData[vampireName];
@@ -255,11 +256,11 @@ function checkHandQuery(hand, vampireData, query) {
 
     // Check if this vampire matches the query
     if (matchesQuery(vampire, query)) {
-      return true;
+      matchingVampires++;
     }
   }
 
-  return false;
+  return matchingVampires >= (query.minDistinct || 1);
 }
 
 function matchesQuery(vampire, query) {
