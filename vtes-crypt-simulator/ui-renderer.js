@@ -209,7 +209,7 @@ const SpecificComboResult = ({ selected, total, result, draws }) => {
         Probability of opening with ${exactOrAtLeast} this combination: ${prob}%
       </p>
       <p>
-        Occurred in ${result.count.toLocaleString()} out of
+        Occurred in ${result.count.toLocaleString()} out of${" "}
         ${draws.toLocaleString()} draws
       </p>
     </div>
@@ -228,7 +228,7 @@ const QueryResult = ({ query, queryText, result, draws }) => {
       <p class="selected-list">Query: ${queryText}</p>
       <p class="result">Probability: ${prob}%</p>
       <p>
-        Occurred in ${result.count.toLocaleString()} out of
+        Occurred in ${result.count.toLocaleString()} out of${" "}
         ${draws.toLocaleString()} draws
       </p>
     </div>
