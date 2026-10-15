@@ -142,6 +142,35 @@ function init() {
   document
     .getElementById("clearQuery")
     .addEventListener("click", handleClearQuery);
+
+  // Query syntax guide
+  const guide = document.getElementById("queryGuide");
+  document
+    .getElementById("openQueryGuide")
+    .addEventListener("click", () => guide.showModal());
+  document
+    .getElementById("closeQueryGuide")
+    .addEventListener("click", () => guide.close());
+  guide.addEventListener("click", (event) => {
+    // Close when clicking the backdrop (outside the dialog box)
+    const rect = guide.getBoundingClientRect();
+    const outside =
+      event.clientX < rect.left ||
+      event.clientX > rect.right ||
+      event.clientY < rect.top ||
+      event.clientY > rect.bottom;
+    if (event.target === guide && outside) {
+      guide.close();
+      return;
+    }
+    // Clicking an example copies it into the query box
+    const example = event.target.closest("[data-query]");
+    if (example) {
+      document.getElementById("query").value = example.dataset.query;
+      guide.close();
+      document.getElementById("query").focus();
+    }
+  });
 }
 
 // Start application when DOM is ready

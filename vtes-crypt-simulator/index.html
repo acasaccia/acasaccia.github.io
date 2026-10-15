@@ -56,19 +56,13 @@ Library section will be ignored."
           <p class="query-help">
             Start with <strong>at least N</strong>, <strong>at most N</strong>,
             <strong>exactly N</strong>, <strong>no</strong> or
-            <strong>any</strong>, optionally <strong>distinct</strong> (count
-            unique vampires instead of copies), then <strong>where</strong> and
-            filters. Filters: <strong>cap</strong> (= != &lt; &lt;= &gt; &gt;=),
-            <strong>disc</strong>, <strong>name</strong>,
-            <strong>title</strong>, <strong>clan</strong> (= !=, ~ contains,
-            in (a, b)). <strong>title = any</strong> / <strong>none</strong>
-            match titled / untitled vampires. Uppercase disciplines such as
-            <strong>POT</strong> require superior; lowercase
-            <strong>pot</strong> allows either level. Combine with
-            <strong>and</strong>, <strong>or</strong>, <strong>not</strong> and
-            parentheses, both inside a filter and between clauses, e.g.
-            <strong>any where name = "Anson" or at least 2 distinct where cap
-            &lt;= 4</strong>. Quote values containing spaces or commas.
+            <strong>any</strong>, then <strong>where</strong> and filters on
+            <strong>cap</strong>, <strong>disc</strong>,
+            <strong>name</strong>, <strong>title</strong> and
+            <strong>clan</strong>.
+            <button type="button" id="openQueryGuide" class="link-btn">
+              Query syntax guide
+            </button>
           </p>
 
           <button id="calculateQuery" class="btn btn-primary">
@@ -79,6 +73,124 @@ Library section will be ignored."
         <div id="queryResult"></div>
       </div>
     </div>
+
+    <dialog id="queryGuide" class="query-guide">
+      <div class="query-guide-header">
+        <h2>Query syntax</h2>
+        <button
+          type="button"
+          id="closeQueryGuide"
+          class="close-btn"
+          aria-label="Close"
+        >
+          &times;
+        </button>
+      </div>
+
+      <p>
+        A query describes your opening hand. It is made of one or more
+        <strong>clauses</strong>: each counts the vampires in the hand that
+        match some <strong>filters</strong>.
+      </p>
+      <pre>&lt;quantifier&gt; [distinct] [vampire(s)] where &lt;filters&gt;</pre>
+
+      <h3>Quantifiers</h3>
+      <table>
+        <tr><td><code>at least N</code></td><td>N or more matches</td></tr>
+        <tr><td><code>at most N</code></td><td>N or fewer matches</td></tr>
+        <tr><td><code>exactly N</code></td><td>exactly N matches</td></tr>
+        <tr><td><code>any</code></td><td>at least one match</td></tr>
+        <tr><td><code>no</code></td><td>zero matches</td></tr>
+      </table>
+      <p>
+        Without <code>distinct</code> every copy counts: two copies of the same
+        vampire are 2 matches. With <code>distinct</code> they count once.
+      </p>
+
+      <h3>Filters</h3>
+      <table>
+        <tr><th>Filter</th><th>Operators</th><th>Values</th></tr>
+        <tr>
+          <td><code>cap</code> / <code>capacity</code></td>
+          <td><code>= != &lt; &lt;= &gt; &gt;=</code></td>
+          <td>a whole number</td>
+        </tr>
+        <tr>
+          <td><code>disc</code> / <code>discipline</code></td>
+          <td><code>= != in</code></td>
+          <td>
+            <code>POT</code> (uppercase) requires superior; <code>pot</code>
+            (lowercase) accepts either level
+          </td>
+        </tr>
+        <tr>
+          <td><code>name</code></td>
+          <td><code>= != ~ in</code></td>
+          <td><code>"Anson"</code></td>
+        </tr>
+        <tr>
+          <td><code>title</code></td>
+          <td><code>= != ~ in</code></td>
+          <td>
+            <code>prince</code>, <code>baron</code>, <code>inner circle</code>,
+            &hellip; plus <code>any</code> (titled) and <code>none</code>
+            (untitled)
+          </td>
+        </tr>
+        <tr>
+          <td><code>clan</code></td>
+          <td><code>= != ~ in</code></td>
+          <td><code>Ventrue</code>, <code>Daughter of Cacophony</code></td>
+        </tr>
+      </table>
+      <p>
+        <code>~</code> means "contains", e.g. <code>name ~ arika</code> matches
+        both base and advanced versions. <code>in (a, b)</code> matches any of
+        the listed values. Matching ignores case (except the superior/inferior
+        rule for disciplines). Quote values that contain commas, parentheses or
+        the words <code>and</code>/<code>or</code>.
+      </p>
+
+      <h3>Combining</h3>
+      <p>
+        Use <code>and</code>, <code>or</code>, <code>not</code> and parentheses,
+        both between filters and between whole clauses. <code>and</code> binds
+        tighter than <code>or</code>.
+      </p>
+
+      <h3>Examples</h3>
+      <p class="query-guide-hint">Click an example to use it.</p>
+      <ul class="query-examples">
+        <li>
+          <code data-query="any where title = any">any where title = any</code>
+          <span>at least one titled vampire</span>
+        </li>
+        <li>
+          <code data-query="no vampire where title = any">no vampire where title = any</code>
+          <span>no titled vampires at all</span>
+        </li>
+        <li>
+          <code data-query="at least 2 distinct where cap <= 4">at least 2 distinct where cap &lt;= 4</code>
+          <span>two different small vampires</span>
+        </li>
+        <li>
+          <code data-query="at least 1 where disc = DOM and (title in (prince, justicar) or cap > 9)">at least 1 where disc = DOM and (title in (prince, justicar) or cap &gt; 9)</code>
+          <span>superior Dominate on a prince, justicar or big vampire</span>
+        </li>
+        <li>
+          <code data-query='any where name = "Anson" or any where name = "Lodin"'>any where name = "Anson" or any where name = "Lodin"</code>
+          <span>either of two specific vampires</span>
+        </li>
+        <li>
+          <code data-query="at least 1 where clan = Brujah and no vampire where cap >= 10">at least 1 where clan = Brujah and no vampire where cap &gt;= 10</code>
+          <span>a Brujah, and nothing at capacity 10 or more</span>
+        </li>
+        <li>
+          <code data-query="exactly 1 where name ~ arika">exactly 1 where name ~ arika</code>
+          <span>exactly one copy of any Arika</span>
+        </li>
+      </ul>
+    </dialog>
 
     <script type="module" src="main.js"></script>
   </body>

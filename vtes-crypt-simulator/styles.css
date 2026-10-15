@@ -103,6 +103,117 @@ input[type="number"],
   font-size: 12px;
 }
 
+.link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #1976d2;
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+}
+
+/* Query Guide Modal */
+.query-guide {
+  width: min(760px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.query-guide::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.query-guide-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.query-guide-header h2 {
+  margin: 0;
+}
+
+.query-guide h3 {
+  margin: 16px 0 6px;
+  font-size: 14px;
+}
+
+.query-guide p {
+  margin: 6px 0;
+}
+
+.query-guide pre {
+  background: #f5f5f5;
+  padding: 8px;
+  overflow-x: auto;
+}
+
+.query-guide table {
+  margin-top: 4px;
+}
+
+.query-guide td,
+.query-guide th {
+  padding: 4px 8px;
+  vertical-align: top;
+}
+
+.query-guide code {
+  background: #f0f0f0;
+  padding: 0 3px;
+  border-radius: 2px;
+}
+
+.query-guide-hint {
+  font-style: italic;
+  color: #666;
+}
+
+.query-examples {
+  list-style: none;
+}
+
+.query-examples li {
+  margin: 8px 0;
+}
+
+.query-examples code[data-query] {
+  display: block;
+  padding: 4px 6px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.query-examples code[data-query]:hover {
+  background: #e3f2fd;
+}
+
+.query-examples span {
+  display: block;
+  color: #666;
+  padding-left: 6px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  color: #666;
+}
+
+.close-btn:hover {
+  color: #000;
+}
+
 /* Buttons */
 .btn {
   padding: 8px 15px;
