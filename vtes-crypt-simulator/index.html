@@ -51,14 +51,24 @@ Library section will be ignored."
             id="query"
             class="query-input"
             rows="3"
-            placeholder="at least 2 distinct where title = baron&#10;&#10;at least 1 where clan = Brujah and capacity >= 7"
+            placeholder="at least 2 distinct where title = any&#10;&#10;no vampire where clan = Brujah and cap >= 7"
           ></textarea>
           <p class="query-help">
-            Use <strong>at least N distinct where</strong> followed by filters
-            joined with <strong>and</strong>. Filters: title, clan, discipline,
-            capacity &gt;= N, capacity &lt;= N. Uppercase disciplines such as
+            Start with <strong>at least N</strong>, <strong>at most N</strong>,
+            <strong>exactly N</strong>, <strong>no</strong> or
+            <strong>any</strong>, optionally <strong>distinct</strong> (count
+            unique vampires instead of copies), then <strong>where</strong> and
+            filters. Filters: <strong>cap</strong> (= != &lt; &lt;= &gt; &gt;=),
+            <strong>disc</strong>, <strong>name</strong>,
+            <strong>title</strong>, <strong>clan</strong> (= !=, ~ contains,
+            in (a, b)). <strong>title = any</strong> / <strong>none</strong>
+            match titled / untitled vampires. Uppercase disciplines such as
             <strong>POT</strong> require superior; lowercase
-            <strong>pot</strong> allows either level.
+            <strong>pot</strong> allows either level. Combine with
+            <strong>and</strong>, <strong>or</strong>, <strong>not</strong> and
+            parentheses, both inside a filter and between clauses, e.g.
+            <strong>any where name = "Anson" or at least 2 distinct where cap
+            &lt;= 4</strong>. Quote values containing spaces or commas.
           </p>
 
           <button id="calculateQuery" class="btn btn-primary">

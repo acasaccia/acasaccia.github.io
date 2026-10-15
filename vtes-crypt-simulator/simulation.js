@@ -222,8 +222,8 @@ export function calculateSpecificCombination(
   };
 }
 
-// Query functions for vampire attributes
-export function simulateWithQuery(deck, vampireData, draws, handSize, query) {
+// Simulate draws against a compiled (hand) => boolean query predicate
+export function simulateWithQuery(deck, draws, handSize, predicate) {
   const deckSize = deck.length;
   const working = [...deck];
   let matchCount = 0;
@@ -234,8 +234,7 @@ export function simulateWithQuery(deck, vampireData, draws, handSize, query) {
 
     const hand = working.slice(0, handSize);
 
-    // Check if hand satisfies the query
-    if (checkHandQuery(hand, vampireData, query)) {
+    if (predicate(hand)) {
       matchCount++;
     }
   }
@@ -244,57 +243,4 @@ export function simulateWithQuery(deck, vampireData, draws, handSize, query) {
     count: matchCount,
     probability: matchCount / draws,
   };
-}
-
-function checkHandQuery(hand, vampireData, query) {
-  const uniqueVampires = [...new Set(hand)];
-  let matchingVampires = 0;
-
-  for (const vampireName of uniqueVampires) {
-    const vampire = vampireData[vampireName];
-    if (!vampire) continue;
-
-    // Check if this vampire matches the query
-    if (matchesQuery(vampire, query)) {
-      matchingVampires++;
-    }
-  }
-
-  return matchingVampires >= (query.minDistinct || 1);
-}
-
-function matchesQuery(vampire, query) {
-  // Check discipline - use case to determine level (POT=superior, pot=inferior)
-  if (query.discipline) {
-    const disc = query.discipline;
-    const isUpperCase = disc === disc.toUpperCase();
-    const discNormalized = disc.toUpperCase();
-
-    if (isUpperCase) {
-      // Looking for superior discipline (e.g., POT) - only matches superior
-      if (!vampire.disciplines.superior.includes(discNormalized)) return false;
-    } else {
-      // Looking for inferior discipline (e.g., pot) - matches inferior OR superior
-      // (vampires with superior can play cards requiring inferior)
-      const hasInferior = vampire.disciplines.inferior.includes(discNormalized);
-      const hasSuperior = vampire.disciplines.superior.includes(discNormalized);
-      if (!hasInferior && !hasSuperior) return false;
-    }
-  }
-
-  // Check capacity
-  if (query.minCapacity !== undefined && vampire.capacity < query.minCapacity)
-    return false;
-  if (query.maxCapacity !== undefined && vampire.capacity > query.maxCapacity)
-    return false;
-
-  // Check title
-  if (query.title && vampire.title.toLowerCase() !== query.title.toLowerCase())
-    return false;
-
-  // Check clan
-  if (query.clan && vampire.clan.toLowerCase() !== query.clan.toLowerCase())
-    return false;
-
-  return true;
 }

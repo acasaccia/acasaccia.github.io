@@ -12,6 +12,7 @@ import {
   renderEmptyState,
   renderError,
 } from "./ui-renderer.js";
+import { parseQuery, compileQuery } from "./query.js";
 
 // Application state
 let currentSimulationData = null;
@@ -98,9 +99,11 @@ function handleCalculateQuery() {
 
   const queryText = document.getElementById("query").value.trim();
   let query;
+  let predicate;
 
   try {
     query = parseQuery(queryText);
+    predicate = compileQuery(query, currentSimulationData.vampireData);
   } catch (error) {
     renderError(document.getElementById("queryResult"), error.message);
     return;
@@ -108,61 +111,12 @@ function handleCalculateQuery() {
 
   const result = simulateWithQuery(
     currentSimulationData.deck,
-    currentSimulationData.vampireData,
     currentSimulationData.draws,
     currentSimulationData.handSize,
-    query,
+    predicate,
   );
 
   renderQueryResult(query, queryText, result, currentSimulationData.draws);
-}
-
-function parseQuery(text) {
-  if (!text) throw new Error("Please enter a query.");
-
-  const normalized = text.replace(/\s+/g, " ").trim();
-  const match = normalized.match(
-    /^at least (\d+) distinct(?: vampires?)? where (.+)$/i,
-  );
-
-  if (!match) {
-    throw new Error(
-      'Use the format: "at least 2 distinct where title = baron".',
-    );
-  }
-
-  const minDistinct = parseInt(match[1]);
-  if (minDistinct < 1) throw new Error("N must be at least 1.");
-
-  const query = { minDistinct };
-  const expressions = match[2].split(/\s+and\s+/i);
-
-  expressions.forEach((expression) => {
-    const filter = expression.match(
-      /^(title|clan|discipline|capacity)\s*(=|>=|<=)\s*(.+)$/i,
-    );
-    if (!filter) {
-      throw new Error(`Could not understand filter: "${expression}".`);
-    }
-
-    const field = filter[1].toLowerCase();
-    const operator = filter[2];
-    const value = filter[3].trim().replace(/^(["'])(.*)\1$/, "$2");
-
-    if (field === "capacity") {
-      const capacity = Number(value);
-      if (!Number.isInteger(capacity) || operator === "=") {
-        throw new Error("Capacity must use >= or <= with a whole number.");
-      }
-      query[operator === ">=" ? "minCapacity" : "maxCapacity"] = capacity;
-    } else if (operator !== "=") {
-      throw new Error(`${field} only supports the = operator.`);
-    } else {
-      query[field] = value;
-    }
-  });
-
-  return query;
 }
 
 // Handle clear query
