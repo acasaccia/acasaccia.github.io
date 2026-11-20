@@ -1,0 +1,7 @@
+name = "melee-proxy"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+# Credentials pass through in the Authorization header: never retain logs
+[observability]
+enabled = false

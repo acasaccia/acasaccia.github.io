@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Melee Discord Helper</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <!--
+    This page stores API credentials in the browser: do NOT add third-party
+    scripts (analytics, widgets, CDNs) to it, they could read them.
+  -->
+  <body>
+    <div class="container">
+      <h1>🎮 Melee Discord Helper</h1>
+      <p class="subtitle">Manage your Magic: The Gathering tournament</p>
+
+      <details class="settings" id="settings">
+        <summary>⚙️ API settings</summary>
+
+        <p class="settings-note">
+          Your Melee.gg credentials never leave this browser except to be sent
+          to the proxy below, which forwards them to melee.gg. They are kept in
+          this tab only, unless you choose to remember them.
+        </p>
+
+        <div class="input-group">
+          <label for="proxyUrl">Proxy URL</label>
+          <input
+            type="url"
+            id="proxyUrl"
+            placeholder="https://melee-proxy.your-account.workers.dev"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+
+        <div class="input-group">
+          <label for="clientId">Client ID</label>
+          <input
+            type="text"
+            id="clientId"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+
+        <div class="input-group">
+          <label for="clientSecret">Client Secret</label>
+          <input
+            type="password"
+            id="clientSecret"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+
+        <div class="settings-actions">
+          <label class="checkbox">
+            <input type="checkbox" id="rememberCredentials" />
+            Remember credentials in this browser
+          </label>
+          <button type="button" class="btn-clear" id="clearCredentials">
+            Forget credentials
+          </button>
+        </div>
+      </details>
+
+      <div class="input-group">
+        <label for="tournamentId">Tournament ID</label>
+        <input
+          type="text"
+          id="tournamentId"
+          placeholder="Enter tournament ID (e.g., 12345)"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="button-group">
+        <button
+          type="button"
+          class="btn-command btn-participants"
+          data-command="participants"
+        >
+          👥 Participants
+        </button>
+        <button
+          type="button"
+          class="btn-command btn-pairings"
+          data-command="pairings"
+        >
+          🎯 Pairings
+        </button>
+        <button
+          type="button"
+          class="btn-command btn-standings"
+          data-command="standings"
+        >
+          🏆 Standings
+        </button>
+      </div>
+
+      <div class="output-header">
+        <span class="output-label">Output</span>
+      </div>
+
+      <div class="output-container" id="output">
+        <div class="empty-state">
+          Enter a tournament ID and click a button to generate a message you can
+          post in Discord!
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
