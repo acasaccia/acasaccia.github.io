@@ -46,8 +46,7 @@ Setting `CLOUDFLARE_ACCOUNT_ID` avoids the account lookup, which would
 otherwise require the extra `User → Memberships → Read` permission.
 
 Wrangler prints the worker URL (e.g. `https://melee-proxy.<account>.workers.dev`).
-Set it as `DEFAULT_PROXY_URL` in `../app.js`, or paste it in the page's
-"API settings" panel.
+Set it as `PROXY_URL` in `../app.js`.
 
 After the first deploy, check in the dashboard (worker → **Settings →
 Observability**) that Workers Logs are off.

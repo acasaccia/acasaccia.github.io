@@ -6,8 +6,8 @@ import {
   splitMessage,
 } from "./melee.js";
 
-// Set this once the proxy is deployed, so users don't have to type it.
-const DEFAULT_PROXY_URL = "https://melee-proxy.acasaccia.workers.dev";
+// CORS proxy for the Melee.gg API (see proxy/README.md)
+const PROXY_URL = "https://melee-proxy.acasaccia.workers.dev";
 
 // Non-secret preferences, always persisted.
 const SETTINGS_KEY = "mdh.settings";
@@ -22,7 +22,6 @@ const formatters = {
 
 const $ = (id) => document.getElementById(id);
 const settingsPanel = $("settings");
-const proxyUrlInput = $("proxyUrl");
 const clientIdInput = $("clientId");
 const clientSecretInput = $("clientSecret");
 const saveButton = $("saveCredentials");
@@ -64,7 +63,6 @@ function loadState() {
   const settings = storage.read(SETTINGS_KEY) || {};
   const credentials = storage.read(CREDENTIALS_KEY);
 
-  proxyUrlInput.value = settings.proxyUrl || DEFAULT_PROXY_URL;
   tournamentIdInput.value = settings.tournamentId || "";
 
   if (credentials) {
@@ -78,7 +76,6 @@ function loadState() {
 
 function saveSettings() {
   storage.write(SETTINGS_KEY, {
-    proxyUrl: proxyUrlInput.value.trim(),
     tournamentId: tournamentIdInput.value.trim(),
   });
 }
@@ -130,11 +127,7 @@ function forgetCredentials() {
 }
 
 function hasSettings() {
-  return Boolean(
-    proxyUrlInput.value.trim() &&
-    clientIdInput.value.trim() &&
-    clientSecretInput.value.trim(),
-  );
+  return Boolean(clientIdInput.value.trim() && clientSecretInput.value.trim());
 }
 
 function el(tag, className, text) {
@@ -211,7 +204,7 @@ async function fetchData(command) {
 
   if (!hasSettings()) {
     settingsPanel.open = true;
-    showError("Please fill in the proxy URL, Client ID and Client Secret");
+    showError("Please fill in the Client ID and Client Secret");
     return;
   }
 
@@ -232,7 +225,7 @@ async function fetchData(command) {
 
   try {
     const client = createClient({
-      proxyUrl: proxyUrlInput.value.trim(),
+      proxyUrl: PROXY_URL,
       clientId: clientIdInput.value.trim(),
       clientSecret: clientSecretInput.value.trim(),
     });
@@ -253,7 +246,7 @@ async function fetchData(command) {
     }
     if (error instanceof TypeError) {
       showError(
-        `Error: could not reach the proxy (${error.message}). Check the proxy URL.`,
+        `Error: could not reach the proxy (${error.message}). Please try again later.`,
       );
     } else {
       showError(`Error: ${error.message}`);
@@ -270,7 +263,6 @@ commandButtons.forEach((button) =>
   button.addEventListener("click", () => fetchData(button.dataset.command)),
 );
 
-proxyUrlInput.addEventListener("input", saveSettings);
 tournamentIdInput.addEventListener("input", saveSettings);
 clientIdInput.addEventListener("input", () => updateSaveStatus());
 clientSecretInput.addEventListener("input", () => updateSaveStatus());
@@ -285,4 +277,4 @@ tournamentIdInput.addEventListener("keydown", (event) => {
 });
 
 loadState();
-(settingsPanel.open ? proxyUrlInput : tournamentIdInput).focus();
+(settingsPanel.open ? clientIdInput : tournamentIdInput).focus();
