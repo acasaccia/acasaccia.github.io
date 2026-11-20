@@ -1,0 +1,2 @@
+# Wrangler local cache (may contain Cloudflare account details)
+.wrangler/
