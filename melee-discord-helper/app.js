@@ -11,7 +11,7 @@ const DEFAULT_PROXY_URL = "https://melee-proxy.acasaccia.workers.dev";
 
 // Non-secret preferences, always persisted.
 const SETTINGS_KEY = "mdh.settings";
-// Secrets, persisted only if the user opts in.
+// Secrets, persisted only when the user clicks "Save".
 const CREDENTIALS_KEY = "mdh.credentials";
 
 const formatters = {
@@ -25,7 +25,9 @@ const settingsPanel = $("settings");
 const proxyUrlInput = $("proxyUrl");
 const clientIdInput = $("clientId");
 const clientSecretInput = $("clientSecret");
-const rememberInput = $("rememberCredentials");
+const saveButton = $("saveCredentials");
+const forgetButton = $("clearCredentials");
+const saveStatus = $("saveStatus");
 const tournamentIdInput = $("tournamentId");
 const outputDiv = $("output");
 const commandButtons = document.querySelectorAll(".btn-command");
@@ -44,8 +46,9 @@ const storage = {
   write(key, value) {
     try {
       localStorage.setItem(key, JSON.stringify(value));
+      return true;
     } catch {
-      // ignore
+      return false;
     }
   },
   remove(key) {
@@ -67,10 +70,10 @@ function loadState() {
   if (credentials) {
     clientIdInput.value = credentials.clientId || "";
     clientSecretInput.value = credentials.clientSecret || "";
-    rememberInput.checked = true;
   }
 
   settingsPanel.open = !hasSettings();
+  updateSaveStatus();
 }
 
 function saveSettings() {
@@ -80,23 +83,50 @@ function saveSettings() {
   });
 }
 
-function saveCredentials() {
-  if (rememberInput.checked) {
-    storage.write(CREDENTIALS_KEY, {
-      clientId: clientIdInput.value.trim(),
-      clientSecret: clientSecretInput.value.trim(),
-    });
+function currentCredentials() {
+  return {
+    clientId: clientIdInput.value.trim(),
+    clientSecret: clientSecretInput.value.trim(),
+  };
+}
+
+function updateSaveStatus(message) {
+  const stored = storage.read(CREDENTIALS_KEY);
+  const current = currentCredentials();
+  const hasInput = Boolean(current.clientId || current.clientSecret);
+  const isSaved =
+    stored !== null &&
+    stored.clientId === current.clientId &&
+    stored.clientSecret === current.clientSecret;
+
+  if (message) {
+    saveStatus.textContent = message;
+  } else if (isSaved) {
+    saveStatus.textContent = "✓ Saved in this browser";
+  } else if (stored) {
+    saveStatus.textContent = "Unsaved changes";
   } else {
-    storage.remove(CREDENTIALS_KEY);
+    saveStatus.textContent = "Not saved: kept in this tab only";
   }
+
+  saveButton.disabled =
+    isSaved || !current.clientId || !current.clientSecret;
+  forgetButton.disabled = stored === null && !hasInput;
+}
+
+function saveCredentials() {
+  const saved = storage.write(CREDENTIALS_KEY, currentCredentials());
+  updateSaveStatus(
+    saved ? undefined : "Could not save: browser storage is unavailable",
+  );
 }
 
 function forgetCredentials() {
   clientIdInput.value = "";
   clientSecretInput.value = "";
-  rememberInput.checked = false;
   storage.remove(CREDENTIALS_KEY);
   settingsPanel.open = true;
+  updateSaveStatus();
 }
 
 function hasSettings() {
@@ -242,10 +272,10 @@ commandButtons.forEach((button) =>
 
 proxyUrlInput.addEventListener("input", saveSettings);
 tournamentIdInput.addEventListener("input", saveSettings);
-clientIdInput.addEventListener("input", saveCredentials);
-clientSecretInput.addEventListener("input", saveCredentials);
-rememberInput.addEventListener("change", saveCredentials);
-$("clearCredentials").addEventListener("click", forgetCredentials);
+clientIdInput.addEventListener("input", () => updateSaveStatus());
+clientSecretInput.addEventListener("input", () => updateSaveStatus());
+saveButton.addEventListener("click", saveCredentials);
+forgetButton.addEventListener("click", forgetCredentials);
 
 // Enter on the tournament ID defaults to participants
 tournamentIdInput.addEventListener("keydown", (event) => {

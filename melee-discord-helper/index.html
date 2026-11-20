@@ -22,8 +22,50 @@
         <p class="settings-note">
           Your Melee.gg credentials never leave this browser except to be sent
           to the proxy below, which forwards them to melee.gg. They are kept in
-          this tab only, unless you choose to remember them.
+          this tab only, unless you save them. Saved credentials are stored
+          unencrypted in this browser: only save them on a device you trust.
         </p>
+
+        <details class="help">
+          <summary>How do I get a Client ID and Client Secret?</summary>
+          <p>
+            Melee.gg issues API credentials manually, and only to tournament
+            organizers and their designated staff:
+          </p>
+          <ul>
+            <li>
+              <strong>You own the organization:</strong> email
+              <a href="mailto:contact@melee.gg">contact@melee.gg</a> asking for
+              API access for your organization.
+            </li>
+            <li>
+              <strong>You are staff of someone else's organization:</strong>
+              you need Coverage Staff clearance on the tournaments (or the
+              whole organization) you want to use, and the organization owner
+              must email
+              <a href="mailto:contact@melee.gg">contact@melee.gg</a> to confirm
+              that you can be given API access.
+            </li>
+          </ul>
+          <p>
+            Once the request is approved, Melee.gg generates your Client ID and
+            Client Secret: paste them below.
+          </p>
+          <p>
+            The API exposes players' personal data, and the organization is
+            responsible for how it is used. Treat the Client Secret like a
+            password and never share it.
+          </p>
+          <p>
+            More details:
+            <a
+              href="https://help.melee.gg/docs/api-use/"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Melee.gg help — API use</a
+            >.
+          </p>
+        </details>
 
         <div class="input-group">
           <label for="proxyUrl">Proxy URL</label>
@@ -57,13 +99,15 @@
         </div>
 
         <div class="settings-actions">
-          <label class="checkbox">
-            <input type="checkbox" id="rememberCredentials" />
-            Remember credentials in this browser
-          </label>
-          <button type="button" class="btn-clear" id="clearCredentials">
-            Forget credentials
-          </button>
+          <span class="save-status" id="saveStatus" aria-live="polite"></span>
+          <div class="settings-buttons">
+            <button type="button" class="btn-save" id="saveCredentials">
+              Save in this browser
+            </button>
+            <button type="button" class="btn-clear" id="clearCredentials">
+              Forget credentials
+            </button>
+          </div>
         </div>
       </details>
 

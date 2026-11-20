@@ -291,14 +291,14 @@ pre.output {
   padding: 12px 16px;
 }
 
-.settings summary {
+.settings > summary {
   cursor: pointer;
   font-weight: 600;
   color: #555;
   font-size: 14px;
 }
 
-.settings[open] summary {
+.settings[open] > summary {
   margin-bottom: 15px;
 }
 
@@ -321,12 +321,57 @@ pre.output {
   gap: 10px;
 }
 
-label.checkbox {
+.settings-buttons {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  font-weight: normal;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.save-status {
+  color: #666;
+  font-size: 13px;
+}
+
+.btn-save {
+  background: #4caf50;
+  padding: 6px 12px;
+  font-size: 13px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.btn-save:hover:not(:disabled) {
+  background: #43a047;
+}
+
+.help {
+  margin-bottom: 15px;
+  color: #555;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.help summary {
+  cursor: pointer;
+  color: #667eea;
+  font-weight: 600;
+}
+
+.help[open] summary {
+  margin-bottom: 8px;
+}
+
+.help p,
+.help ul {
+  margin-bottom: 8px;
+}
+
+.help ul {
+  padding-left: 20px;
+}
+
+.help a {
+  color: #667eea;
 }
 
 .btn-clear {
